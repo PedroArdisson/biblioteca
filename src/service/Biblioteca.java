@@ -4,6 +4,8 @@ import model.Emprestimo;
 import model.Livro;
 import model.Usuario;
 
+import java.util.Scanner;
+
 public class Biblioteca {
     Usuario[] usuarios;
     Livro[] livros;
@@ -91,17 +93,63 @@ public class Biblioteca {
         return null;
     }
 
-    public void realizarEmprestimo(int idUsuario, int idLivro){
-        if(qtdEmprestimos >= emprestimos.length){
-            System.out.println("O sistema atingiu o limite máximo de empréstimos simultâneos!");
+    public void realizarEmprestimo(){
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("=== REALIZAR EMPRÉSTIMO ===");
+        System.out.print("Deseja buscar o usuário por [1] ID ou [2] Nome? ");
+        int opcao = sc.nextInt();
+        sc.nextLine();
+
+        Usuario usuario = null;
+
+        if (opcao==1){
+            System.out.print("Digite o ID do Usuário: ");
+            int idUsuario = sc.nextInt();
+            sc.nextLine();
+            usuario = buscarUsuarioPorId(idUsuario);
         }
 
-        Usuario usuario = buscarUsuarioPorId(idUsuario);
-        Livro livro = buscarLivroPorId(idLivro);
-
-        if (usuario==null){
-            System.out.println();
+        else if (opcao == 2){
+            System.out.print("Digite o nome do usuário: ");
+            String nomeUsuario = sc.nextLine();
+            usuario = buscarUsuarioPorNome(nomeUsuario);
         }
+
+        else{
+            System.out.println("Opção Inválida");
+            return;
+        }
+
+        System.out.println("Digite o nome do livro: ");
+        String nomeLivro = sc.nextLine();
+        Livro livro = buscarLivroPorNome(nomeLivro);
+
+        if (livro == null){
+            System.out.println("Livro não encontrado!");
+            return;
+        }
+
+        if (usuario.getLivrosEmprestados()>= MAX_LIVROS_POR_USUARIO){
+            System.out.println("⚠️ O usuário " + usuario.getNome() +
+                    " já atingiu o limite de " + MAX_LIVROS_POR_USUARIO + " livros emprestados.");
+            return;
+        }
+
+        if (!livro.isStatus()){
+            System.out.println("⚠️ O livro \"" + livro.getNome() + "\" já está emprestado!");
+            return;
+        }
+
+        Emprestimo novoEmprestimo = new Emprestimo(usuario, livro);
+        emprestimos[qtdEmprestimos] = novoEmprestimo;
+        qtdEmprestimos++;
+
+        System.out.println("\nEmpréstimo realizado com sucesso!");
+        System.out.println("Usuário: " + usuario.getNome());
+        System.out.println("Livro: " + livro.getNome());
+        System.out.println("Devolução até: " + novoEmprestimo.getDataLimiteDevolucao());
+
     }
 
 }
