@@ -13,6 +13,8 @@ public class Biblioteca {
     private int qtdLivros;
     private int qtdEmprestimos;
 
+    private final int MAX_LIVROS_POR_USUARIO = 5;
+
     public Biblioteca(int maxUsuarios, int maxLivros, int maxEmprestimos){
         usuarios = new Usuario[maxUsuarios];
         livros = new Livro[maxLivros];
@@ -62,6 +64,15 @@ public class Biblioteca {
         return null;
     }
 
+    public Usuario buscarUsuarioPorNome(String nome){
+        for (int i = 0; i < qtdUsuarios; i++) {
+            if (usuarios[i].getNome().equalsIgnoreCase(nome)){
+                return usuarios[i];
+            }
+        }
+        return null;
+    }
+
     public Livro buscarLivroPorId(int id){
         for (int i = 0; i < qtdLivros; i++) {
             if (livros[i].getId()==id){
@@ -69,6 +80,28 @@ public class Biblioteca {
             }
         }
         return null;
+    }
+
+    public Livro buscarLivroPorNome(String nome){
+        for (int i = 0; i < qtdLivros; i++) {
+            if (livros[i].getNome().equalsIgnoreCase(nome)){
+                return livros[i];
+            }
+        }
+        return null;
+    }
+
+    public void realizarEmprestimo(int idUsuario, int idLivro){
+        if(qtdEmprestimos >= emprestimos.length){
+            System.out.println("O sistema atingiu o limite máximo de empréstimos simultâneos!");
+        }
+
+        Usuario usuario = buscarUsuarioPorId(idUsuario);
+        Livro livro = buscarLivroPorId(idLivro);
+
+        if (usuario==null){
+            System.out.println();
+        }
     }
 
 }
