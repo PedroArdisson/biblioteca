@@ -152,4 +152,65 @@ public class Biblioteca {
 
     }
 
+    public void devolverLivro(){
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("=== DEVOLUÇÃO DE LIVROS ===");
+        System.out.print("Deseja buscar o usuário por [1] ID ou [2] nome? ");
+        int opcao = sc.nextInt();
+        sc.nextLine();
+
+        Usuario usuario = null;
+
+        if (opcao==1){
+            System.out.print("Digite o ID do Usuário: ");
+            int idUsuario = sc.nextInt();
+            sc.nextLine();
+            usuario = buscarUsuarioPorId(idUsuario);
+        } else if (opcao==2) {
+            System.out.print("Digite o nome do usuário: ");
+            String nomeUsuario = sc.nextLine();
+            usuario = buscarUsuarioPorNome(nomeUsuario);
+        } else {
+            System.out.println("Opção Inválida!");
+        }
+
+        if (usuario==null){
+            System.out.println("Usuário não encontrado!");
+            return;
+        }
+
+        Emprestimo[] emprestimosUsuario = new Emprestimo[qtdEmprestimos];
+        int count = 0;
+
+        for (int i = 0; i < qtdEmprestimos; i++) {
+            if (emprestimos[i].isAtivo() && emprestimos[i].getUsuario().equals(usuario)){
+                emprestimosUsuario[count] = emprestimos [i];
+                count++;
+            }
+        }
+
+        if (count==0){
+            System.out.println("O usuário "+usuario.getNome()+" não possui livros emprestados.");
+            return;
+        }
+
+        System.out.println("\nLivros emprestados por "+usuario.getNome()+":");
+        for (int i = 0; i < count; i++) {
+            System.out.println("["+(i=1)+"]"+emprestimosUsuario[i].getLivro().getNome());
+        }
+
+        System.out.println("\nEscolha o número do livro a devolver: ");
+        int escolha = sc.nextInt();
+        sc.nextLine();
+
+        if (escolha>1 || escolha > count){
+            System.out.println("Opção inválida!");
+            return;
+        }
+
+        Emprestimo emprestimoSelecionado = emprestimosUsuario[escolha-1];
+        emprestimoSelecionado.devolverLivros();
+    }
+
 }
