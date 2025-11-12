@@ -148,8 +148,33 @@ public class Biblioteca {
         System.out.println("\nEmpréstimo realizado com sucesso!");
         System.out.println("Usuário: " + usuario.getNome());
         System.out.println("Livro: " + livro.getNome());
-        System.out.println("Devolução até: " + novoEmprestimo.getDataLimiteDevolucao());
+        if (novoEmprestimo != null) {
+            System.out.println("Devolução até: " + novoEmprestimo.getDataLimiteDevolucao());
+        }
 
+    }
+
+    public void exibirEmprestimosAtivos(){
+        System.out.println("=== RELATÓRIO DE EMPRÉSTIMOS ATIVOS ===");
+
+        boolean encontrou = false;
+
+        for (int i = 0; i < qtdEmprestimos; i++) {
+            Emprestimo e = emprestimos[i];
+
+            if(e != null && e.isAtivo()){
+                System.out.println("Empréstimo ID: " + (i + 1));
+                System.out.println("Usuário: " + e.getUsuario().getNome());
+                System.out.println("Livro: " + e.getLivro().getNome());
+                System.out.println("Data do Empréstimo: " + e.getDataEmprestimo());
+                System.out.println("Data Limite: " + e.getDataLimiteDevolucao());
+                System.out.println("-----------------------------------");
+                encontrou = true;
+            }
+        }
+        if (!encontrou){
+            System.out.println("Nenhum empréstimo ativo no momento");
+        }
     }
 
     public void devolverLivro(){
@@ -197,14 +222,14 @@ public class Biblioteca {
 
         System.out.println("\nLivros emprestados por "+usuario.getNome()+":");
         for (int i = 0; i < count; i++) {
-            System.out.println("["+(i=1)+"]"+emprestimosUsuario[i].getLivro().getNome());
+            System.out.println("["+(i+1)+"]"+emprestimosUsuario[i].getLivro().getNome());
         }
 
         System.out.println("\nEscolha o número do livro a devolver: ");
         int escolha = sc.nextInt();
         sc.nextLine();
 
-        if (escolha>1 || escolha > count){
+        if (escolha < 1 || escolha > count){
             System.out.println("Opção inválida!");
             return;
         }
