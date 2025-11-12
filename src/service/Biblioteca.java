@@ -113,7 +113,7 @@ public class Biblioteca {
         else if (opcao == 2){
             System.out.print("Digite o nome do usuário: ");
             String nomeUsuario = sc.nextLine();
-            usuario = buscarUsuarioPorNome(nomeUsuario);
+            usuario = buscarUsuarioPorNomeParcial(nomeUsuario);
         }
 
         else{
@@ -123,7 +123,7 @@ public class Biblioteca {
 
         System.out.println("Digite o nome do livro: ");
         String nomeLivro = sc.nextLine();
-        Livro livro = buscarLivroPorNome(nomeLivro);
+        Livro livro = buscarLivroPorNomeParcial(nomeLivro);
 
         if (livro == null){
             System.out.println("Livro não encontrado!");
@@ -211,6 +211,71 @@ public class Biblioteca {
 
         Emprestimo emprestimoSelecionado = emprestimosUsuario[escolha-1];
         emprestimoSelecionado.devolverLivros();
+    }
+
+    public Usuario buscarUsuarioPorNomeParcial(String nomeParcial){
+        Usuario[] resultados = new Usuario[qtdUsuarios];
+        int qtdResultados = 0;
+
+        for (int i = 0; i < qtdUsuarios; i++) {
+            if (usuarios[i].getNome().toLowerCase().contains(nomeParcial.toLowerCase())){
+                resultados[qtdResultados] = usuarios[i];
+                qtdResultados++;
+            }
+        }
+
+        if(qtdResultados == 0){
+            System.out.println("Nenhum usuário encontrado com esse nome.");
+            return null;
+        }
+
+        System.out.println("\nUsuários encontrados:");
+        for (int i = 0; i < qtdResultados; i++) {
+            System.out.println((i+1)+" - "+ resultados[i].getNome()+" (ID: "+ resultados[i].getId()+")");
+        }
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Digite o número do usuário desejado: ");
+        int escolha = sc.nextInt();
+
+        if (escolha<1 || escolha> qtdResultados){
+            System.out.println("opção inválida!");
+            return null;
+        }
+
+        return resultados[escolha-1];
+    }
+
+    public Livro buscarLivroPorNomeParcial(String nomeParcial){
+        Livro[] resultados = new Livro[qtdLivros];
+        int qtdResultados = 0;
+
+        for (int i = 0; i < qtdLivros; i++) {
+            if (livros[i].getNome().toLowerCase().contains(nomeParcial.toLowerCase())){
+                resultados[qtdResultados] = livros[i];
+                qtdResultados++;
+            }
+        }
+
+        if (qtdResultados==0){
+            System.out.println("Nenhum livro encontrado com esse nome.");
+            return null;
+        }
+
+        System.out.println("\nLivros encontrados:");
+        for (int i = 0; i < qtdResultados; i++) {
+            System.out.println((i+1)+" - "+ resultados[i].getNome()+" (ID: "+resultados[i].getId()+")");
+        }
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Digite o número do livro desejado: ");
+        int escolha = sc.nextInt();
+
+        if (escolha < 1 || escolha > qtdResultados){
+            System.out.println("Opção Inválida!");
+            return null;
+        }
+
+        return resultados[escolha-1];
     }
 
 }
