@@ -1,19 +1,18 @@
-import dao.UsuarioDAO;
-import model.Usuario;
+import dao.LivroDAO;
+import model.Livro;
 
 public class Main {
     public static void main(String[] args) {
 
-        UsuarioDAO dao = new UsuarioDAO();
+        LivroDAO livroDAO = new LivroDAO();
 
-        // Inserindo usuário de teste
-        Usuario u = new Usuario("Pedro", "pedro@example.com", "99999-9999");
-        dao.inserirUsuario(u);
+        Livro l1 = new Livro("O Livro dos Espíritos", "Allan Kardec");
+        livroDAO.inserirLivro(l1);
 
-        // Listando usuários
-        System.out.println("\n=== Usuários cadastrados no banco ===");
-        for (Usuario usuario : dao.listarUsuarios()) {
-            System.out.println(usuario.getId() + ": " + usuario.getNome() + " - " + usuario.getEmail());
+        System.out.println("\n=== LIVROS CADASTRADOS ===");
+        for (Livro livro : livroDAO.listarLivros()) {
+            System.out.println(livro.getId() + " - " + livro.getNome() + " | Disponível: " + livro.isStatus());
         }
+
     }
 }
