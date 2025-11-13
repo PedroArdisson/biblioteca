@@ -18,8 +18,7 @@ public class Biblioteca {
 
     private final int MAX_LIVROS_POR_USUARIO = 5;
 
-
-    public void cadastrarUsuario(){
+    public void cadastrarUsuario() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Nome: ");
@@ -35,7 +34,7 @@ public class Biblioteca {
         usuarioDAO.inserirUsuario(usuario);
     }
 
-    public void cadastrarLivro(){
+    public void cadastrarLivro() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Titulo: ");
@@ -44,70 +43,70 @@ public class Biblioteca {
         System.out.print("Médium: ");
         String autorMedium = scanner.nextLine();
 
-        System.out.println("Espirito(opcional): ");
+        System.out.print("Espírito (opcional): ");
         String autorEspirito = scanner.nextLine();
 
         Livro livro;
 
-        if (autorEspirito.isEmpty()){
+        if (autorEspirito.isEmpty()) {
             livro = new Livro(titulo, autorMedium);
         } else {
             livro = new Livro(titulo, autorMedium, autorEspirito);
         }
+
+        livroDAO.inserirLivro(livro);
     }
 
-    public Usuario escolherUsuarioPorNomeParcial(String nome){
+    public Usuario escolherUsuarioPorNomeParcial(String nome) {
         List<Usuario> lista = usuarioDAO.buscarPorNomeParcial(nome);
 
-        if (lista.isEmpty()){
+        if (lista.isEmpty()) {
             System.out.println("Nenhum usuário encontrado");
             return null;
         }
 
         for (int i = 0; i < lista.size(); i++) {
-            System.out.println((i+1)+" - "+ lista.get(i).getNome());
+            System.out.println((i + 1) + " - " + lista.get(i).getNome());
         }
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Escolha: ");
         int escolha = scanner.nextInt();
 
-        return lista.get(escolha-1);
+        return lista.get(escolha - 1);
     }
 
-    public Livro escolherLivroPorNomeParcial (String nome){
+    public Livro escolherLivroPorNomeParcial(String nome) {
         List<Livro> lista = livroDAO.buscarPorNome(nome);
 
-        if (lista.isEmpty()){
+        if (lista.isEmpty()) {
             System.out.println("Nenhum livro encontrado");
             return null;
         }
 
         for (int i = 0; i < lista.size(); i++) {
-            System.out.println((i+1)+" - "+lista.get(i).getNome());
+            System.out.println((i + 1) + " - " + lista.get(i).getNome());
         }
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Escolha: ");
         int escolha = scanner.nextInt();
 
-        return lista.get(escolha-1);
+        return lista.get(escolha - 1);
     }
 
-    public void realizaEmprestimno(){
+    public void realizarEmprestimo() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Digite o nome do usuario: ");
+        System.out.print("Digite o nome do usuário: ");
         Usuario usuario = escolherUsuarioPorNomeParcial(scanner.nextLine());
 
-        if (usuario==null){
-            return;
-        }
+        if (usuario == null) return;
 
         int emprestimosAtivos = emprestimoDAO.buscarEmprestimosAtivosPorUsuario(usuario.getId()).size();
 
-        if (emprestimosAtivos >= MAX_LIVROS_POR_USUARIO){
-            System.out.println("Usuario atingiu o limite de emprestimos simultaneos.");
+        if (emprestimosAtivos >= MAX_LIVROS_POR_USUARIO) {
+            System.out.println("Usuário atingiu o limite de empréstimos simultâneos.");
             return;
         }
 
@@ -116,7 +115,7 @@ public class Biblioteca {
 
         if (livro == null) return;
 
-        if (!livro.isStatus()){
+        if (!livro.isStatus()) {
             System.out.println("Livro já emprestado.");
             return;
         }
@@ -128,7 +127,7 @@ public class Biblioteca {
 
         emprestimoDAO.inserirEmprestimo(emprestimo);
 
-        System.out.println("Emprestimo realizado com sucesso!");
+        System.out.println("Empréstimo realizado com sucesso!");
     }
 
     public void devolverLivro() {
@@ -147,7 +146,7 @@ public class Biblioteca {
         }
 
         for (int i = 0; i < lista.size(); i++) {
-            System.out.println((i+1) + " - " + lista.get(i).getLivro().getNome());
+            System.out.println((i + 1) + " - " + lista.get(i).getLivro().getNome());
         }
 
         System.out.print("Escolha: ");
@@ -163,5 +162,4 @@ public class Biblioteca {
 
         System.out.println("Devolução concluída!");
     }
-
 }
