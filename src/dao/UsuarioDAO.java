@@ -20,8 +20,6 @@ public class UsuarioDAO {
             pstmt.setString(3, usuario.getTelefone());
             pstmt.executeUpdate();
 
-            System.out.println("Usuário inserido com sucesso no banco!");
-
         } catch (SQLException e) {
             System.out.println("Erro ao inserir usuário: " + e.getMessage());
         }
@@ -50,5 +48,58 @@ public class UsuarioDAO {
         }
 
         return lista;
+    }
+
+    public Usuario buscarPorId(int id) {
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Usuario u = new Usuario(
+                        rs.getString("nome"),
+                        rs.getString("email"),
+                        rs.getString("telefone")
+                );
+                u.setId(id);
+                return u;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar usuário por ID: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public List<Usuario> buscarPorNomeParcial(String nomeParcial) {
+        List<Usuario> resultados = new ArrayList<>();
+        String sql = "SELECT * FROM usuarios WHERE nome LIKE ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%" + nomeParcial + "%");
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Usuario u = new Usuario(
+                        rs.getString("nome"),
+                        rs.getString("email"),
+                        rs.getString("telefone")
+                );
+                u.setId(rs.getInt("id"));
+                resultados.add(u);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar usuário: " + e.getMessage());
+        }
+
+        return resultados;
     }
 }

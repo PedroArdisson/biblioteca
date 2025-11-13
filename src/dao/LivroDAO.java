@@ -155,4 +155,21 @@ public class LivroDAO {
             return false;
         }
     }
+
+    public void atualizarStatus(Livro livro) {
+        String sql = "UPDATE livros SET disponivel = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setBoolean(1, livro.isStatus());
+            pstmt.setInt(2, livro.getId());
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar status do livro: " + e.getMessage());
+        }
+    }
+
 }
