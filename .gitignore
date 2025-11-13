@@ -49,3 +49,5 @@ ehthumbs.db
 
 ### Outros ###
 hs_err_pid*
+/database/*.db
+
