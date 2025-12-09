@@ -7,19 +7,22 @@ public class Usuario {
     private String telefone;
     private int livrosEmprestados;
 
-    private static int proximoId = 1;
-
-    public void emprestarLivros(){
-        if (livrosEmprestados<5){
-            livrosEmprestados++;
-        }
-        else{
-            System.out.println("Limite de livros emprestados atingido para "+nome);
-        }
+    public Usuario() {
     }
 
-    public void devolverLivros(){
-        if (livrosEmprestados>0){
+    public Usuario(String nome, String email, String telefone) {
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+        this.livrosEmprestados = 0;
+    }
+
+    public void emprestarLivros() {
+        livrosEmprestados++;
+    }
+
+    public void devolverLivros() {
+        if (livrosEmprestados > 0) {
             livrosEmprestados--;
         }
     }
@@ -33,15 +36,6 @@ public class Usuario {
                 ", telefone='" + telefone + '\'' +
                 ", livrosEmprestados=" + livrosEmprestados +
                 '}';
-    }
-
-    public Usuario(String nome, String email, String telefone) {
-        this.id = proximoId;
-        proximoId++;
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-        this.livrosEmprestados = 0;
     }
 
     public int getId() {
@@ -82,13 +76,5 @@ public class Usuario {
 
     public void setLivrosEmprestados(int livrosEmprestados) {
         this.livrosEmprestados = livrosEmprestados;
-    }
-
-    public static int getProximoId() {
-        return proximoId;
-    }
-
-    public static void setProximoId(int proximoId) {
-        Usuario.proximoId = proximoId;
     }
 }

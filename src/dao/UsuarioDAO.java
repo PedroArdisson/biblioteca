@@ -20,9 +20,10 @@ public class UsuarioDAO {
             pstmt.setString(3, usuario.getTelefone());
             pstmt.executeUpdate();
 
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                usuario.setId(rs.getInt(1));
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    usuario.setId(rs.getInt(1));
+                }
             }
 
         } catch (SQLException e) {
@@ -128,13 +129,30 @@ public class UsuarioDAO {
     }
 
     public boolean deletarUsuario(int id) {
-        String sql = "DELETE FROM usuarios WHERE id = ?";
+        String sqlVerificar = """
+                SELECT COUNT(*) AS total
+                FROM emprestimos
+                WHERE usuario_id = ? AND data_devolucao IS NULL
+                """;
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String sqlDelete = "DELETE FROM usuarios WHERE id = ?";
 
-            pstmt.setInt(1, id);
-            return pstmt.executeUpdate() > 0;
+        try (Connection conn = DatabaseConnection.getConnection()) {
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlVerificar)) {
+                pstmt.setInt(1, id);
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next() && rs.getInt("total") > 0) {
+                    System.out.println("⚠️ Não é possível deletar: o usuário possui empréstimos ativos.");
+                    return false;
+                }
+            }
+
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlDelete)) {
+                pstmt.setInt(1, id);
+                return pstmt.executeUpdate() > 0;
+            }
 
         } catch (SQLException e) {
             System.out.println("Erro ao deletar usuário: " + e.getMessage());

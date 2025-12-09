@@ -3,37 +3,56 @@ package model;
 import java.time.LocalDate;
 
 public class Emprestimo {
+
     private int id;
     private Usuario usuario;
     private Livro livro;
     private LocalDate dataEmprestimo;
     private LocalDate dataLimiteDevolucao;
+    private LocalDate dataDevolucao; // para usar com o banco
     private boolean ativo;
 
-    private static int proximoId = 1;
-
-    public void devolverLivros(){
-        if(ativo){
-            ativo = false;
-            livro.setStatus(true);
-            usuario.devolverLivros();
-            System.out.println("Livro: "+livro.getNome()+" devolvido com sucesso por "+ usuario.getNome()+"!");
-        }
-        else{
-            System.out.println("Esse livro já foi devolvido anteriormente!");
-        }
+    // ==============================================
+    // 1) Construtor vazio — usado pelo DAO
+    // ==============================================
+    public Emprestimo() {
     }
 
+    // ==============================================
+    // 2) Construtor usado quando o sistema cria um empréstimo
+    // ==============================================
     public Emprestimo(Usuario usuario, Livro livro) {
-        this.id = proximoId;
-        proximoId++;
         this.usuario = usuario;
         this.livro = livro;
-        dataEmprestimo = LocalDate.now();
-        dataLimiteDevolucao = dataEmprestimo.plusDays(30);
-        ativo = true;
+
+        this.dataEmprestimo = LocalDate.now();
+        this.dataLimiteDevolucao = dataEmprestimo.plusDays(30);
+        this.dataDevolucao = null;
+
+        this.ativo = true;
+
+        // efeitos colaterais quando cria empréstimo real
         livro.setStatus(false);
         usuario.emprestarLivros();
+    }
+
+    // ==============================================
+    // Métodos
+    // ==============================================
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public LocalDate getDataDevolucao() {
+        return dataDevolucao;
+    }
+
+    public void setDataDevolucao(LocalDate dataDevolucao) {
+        this.dataDevolucao = dataDevolucao;
     }
 
     public int getId() {
@@ -74,21 +93,5 @@ public class Emprestimo {
 
     public void setDataLimiteDevolucao(LocalDate dataLimiteDevolucao) {
         this.dataLimiteDevolucao = dataLimiteDevolucao;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public static int getProximoId() {
-        return proximoId;
-    }
-
-    public static void setProximoId(int proximoId) {
-        Emprestimo.proximoId = proximoId;
     }
 }

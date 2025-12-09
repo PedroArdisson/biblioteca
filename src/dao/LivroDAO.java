@@ -13,7 +13,7 @@ public class LivroDAO {
         String sql = "INSERT INTO livros (titulo, autor_medium, autor_espirito, disponivel) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, livro.getNome());
             pstmt.setString(2, livro.getAutorMedium());
@@ -21,6 +21,13 @@ public class LivroDAO {
             pstmt.setBoolean(4, livro.isStatus());
 
             pstmt.executeUpdate();
+
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    livro.setId(rs.getInt(1));
+                }
+            }
+
             System.out.println("Livro inserido com sucesso!");
 
         } catch (SQLException e) {
@@ -171,5 +178,4 @@ public class LivroDAO {
             System.out.println("Erro ao atualizar status do livro: " + e.getMessage());
         }
     }
-
 }

@@ -7,19 +7,16 @@ public class Livro {
     private String autorEspirito;
     private boolean status;
 
-    private static int proximoId = 1;
+    public Livro() {
+    }
 
     public Livro(String nome, String autorMedium) {
-        this.id = proximoId;
-        proximoId++;
         this.nome = nome;
         this.autorMedium = autorMedium;
         this.status = true;
     }
 
     public Livro(String nome, String autorMedium, String autorEspirito) {
-        this.id = proximoId;
-        proximoId++;
         this.nome = nome;
         this.autorMedium = autorMedium;
         this.autorEspirito = autorEspirito;
@@ -64,13 +61,5 @@ public class Livro {
 
     public void setStatus(boolean status) {
         this.status = status;
-    }
-
-    public static int getProximoId() {
-        return proximoId;
-    }
-
-    public static void setProximoId(int proximoId) {
-        Livro.proximoId = proximoId;
     }
 }

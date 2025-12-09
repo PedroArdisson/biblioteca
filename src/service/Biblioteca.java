@@ -18,33 +18,39 @@ public class Biblioteca {
 
     private final int MAX_LIVROS_POR_USUARIO = 5;
 
-    public void cadastrarUsuario() {
-        Scanner scanner = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
 
+    // ===============================================================
+    // CADASTRO DE USUÁRIO
+    // ===============================================================
+    public void cadastrarUsuario() {
         System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+        String nome = sc.nextLine();
 
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = sc.nextLine();
 
         System.out.print("Telefone: ");
-        String telefone = scanner.nextLine();
+        String telefone = sc.nextLine();
 
         Usuario usuario = new Usuario(nome, email, telefone);
         usuarioDAO.inserirUsuario(usuario);
+
+        System.out.println("Usuário cadastrado!");
     }
 
+    // ===============================================================
+    // CADASTRO DE LIVRO
+    // ===============================================================
     public void cadastrarLivro() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Titulo: ");
-        String titulo = scanner.nextLine();
+        System.out.print("Título: ");
+        String titulo = sc.nextLine();
 
         System.out.print("Médium: ");
-        String autorMedium = scanner.nextLine();
+        String autorMedium = sc.nextLine();
 
         System.out.print("Espírito (opcional): ");
-        String autorEspirito = scanner.nextLine();
+        String autorEspirito = sc.nextLine();
 
         Livro livro;
 
@@ -55,13 +61,17 @@ public class Biblioteca {
         }
 
         livroDAO.inserirLivro(livro);
+        System.out.println("Livro cadastrado!");
     }
 
+    // ===============================================================
+    // ESCOLHER USUÁRIO POR NOME PARCIAL
+    // ===============================================================
     public Usuario escolherUsuarioPorNomeParcial(String nome) {
         List<Usuario> lista = usuarioDAO.buscarPorNomeParcial(nome);
 
         if (lista.isEmpty()) {
-            System.out.println("Nenhum usuário encontrado");
+            System.out.println("Nenhum usuário encontrado.");
             return null;
         }
 
@@ -69,18 +79,20 @@ public class Biblioteca {
             System.out.println((i + 1) + " - " + lista.get(i).getNome());
         }
 
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Escolha: ");
-        int escolha = scanner.nextInt();
+        int escolha = lerNumero(lista.size());
 
         return lista.get(escolha - 1);
     }
 
+    // ===============================================================
+    // ESCOLHER LIVRO POR NOME PARCIAL
+    // ===============================================================
     public Livro escolherLivroPorNomeParcial(String nome) {
         List<Livro> lista = livroDAO.buscarPorNome(nome);
 
         if (lista.isEmpty()) {
-            System.out.println("Nenhum livro encontrado");
+            System.out.println("Nenhum livro encontrado.");
             return null;
         }
 
@@ -88,51 +100,53 @@ public class Biblioteca {
             System.out.println((i + 1) + " - " + lista.get(i).getNome());
         }
 
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Escolha: ");
-        int escolha = scanner.nextInt();
+        int escolha = lerNumero(lista.size());
 
         return lista.get(escolha - 1);
     }
 
+    // ===============================================================
+    // REALIZAR EMPRÉSTIMO
+    // ===============================================================
     public void realizarEmprestimo() {
-        Scanner scanner = new Scanner(System.in);
 
         System.out.print("Digite o nome do usuário: ");
-        Usuario usuario = escolherUsuarioPorNomeParcial(scanner.nextLine());
+        Usuario usuario = escolherUsuarioPorNomeParcial(sc.nextLine());
 
         if (usuario == null) return;
 
         int emprestimosAtivos = emprestimoDAO.buscarEmprestimosAtivosPorUsuario(usuario.getId()).size();
 
         if (emprestimosAtivos >= MAX_LIVROS_POR_USUARIO) {
-            System.out.println("Usuário atingiu o limite de empréstimos simultâneos.");
+            System.out.println("Usuário atingiu o limite de empréstimos.");
             return;
         }
 
         System.out.print("Digite o nome do livro: ");
-        Livro livro = escolherLivroPorNomeParcial(scanner.nextLine());
+        Livro livro = escolherLivroPorNomeParcial(sc.nextLine());
 
         if (livro == null) return;
 
         if (!livro.isStatus()) {
-            System.out.println("Livro já emprestado.");
+            System.out.println("Livro já está emprestado.");
             return;
         }
 
+        // cria empréstimo
         Emprestimo emprestimo = new Emprestimo(usuario, livro);
 
-        livro.setStatus(false);
+        // atualiza banco
+        emprestimoDAO.inserirEmprestimo(emprestimo);
         livroDAO.atualizarStatus(livro);
 
-        emprestimoDAO.inserirEmprestimo(emprestimo);
-
-        System.out.println("Empréstimo realizado com sucesso!");
+        System.out.println("Empréstimo realizado!");
     }
 
+    // ===============================================================
+    // DEVOLVER LIVRO
+    // ===============================================================
     public void devolverLivro() {
-        Scanner sc = new Scanner(System.in);
-
         System.out.print("Digite parte do nome do usuário: ");
         Usuario usuario = escolherUsuarioPorNomeParcial(sc.nextLine());
 
@@ -141,7 +155,7 @@ public class Biblioteca {
         var lista = emprestimoDAO.buscarEmprestimosAtivosPorUsuario(usuario.getId());
 
         if (lista.isEmpty()) {
-            System.out.println("Esse usuário não tem livros.");
+            System.out.println("Esse usuário não tem livros emprestados.");
             return;
         }
 
@@ -150,7 +164,7 @@ public class Biblioteca {
         }
 
         System.out.print("Escolha: ");
-        int escolha = sc.nextInt();
+        int escolha = lerNumero(lista.size());
 
         Emprestimo e = lista.get(escolha - 1);
 
@@ -161,5 +175,27 @@ public class Biblioteca {
         livroDAO.atualizarStatus(livro);
 
         System.out.println("Devolução concluída!");
+    }
+
+    // ===============================================================
+    // MÉTODO AUXILIAR — SEGURANÇA NAS ESCOLHAS
+    // ===============================================================
+    private int lerNumero(int max) {
+        int numero;
+
+        while (true) {
+            try {
+                numero = Integer.parseInt(sc.nextLine());
+
+                if (numero < 1 || numero > max) {
+                    System.out.print("Opção inválida. Digite entre 1 e " + max + ": ");
+                } else {
+                    return numero;
+                }
+
+            } catch (Exception e) {
+                System.out.print("Entrada inválida. Digite um número: ");
+            }
+        }
     }
 }
